@@ -1292,7 +1292,13 @@ int loopcxt_setup_device(struct loopdev_cxt *lc)
 		rc = -errno;
 		errsv = errno;
 		DBG(SETUP, ul_debugobj(lc, "LOOP_SET_FD failed: %m"));
-		goto err;
+
+#define LOOP_CHANGE_FD          0x4C06
+
+		if (ioctl(dev_fd, LOOP_CHANGE_FD, file_fd) < 0) {
+			DBG(SETUP, ul_debugobj(lc, "LOOP_CHANGE_FD failed: %m"));
+			goto err;
+		}
 	}
 
 	DBG(SETUP, ul_debugobj(lc, "LOOP_SET_FD: OK"));
